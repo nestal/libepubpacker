@@ -24,7 +24,7 @@ class Epub
 public:
 	Epub(const std::string& unique_id, const std::string& title);
 	
-	void Add(const boost::filesystem::path& file);
+	void AddSpine(const std::string& dest, const boost::filesystem::path& src);
 	
 	void Generate(const std::string& outfile) const;
 	

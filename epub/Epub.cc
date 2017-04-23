@@ -66,24 +66,21 @@ void Epub::Generate(const std::string& outfile) const
 	zip.AddData(opf_path, m_opf.Dump());
 
 	for (auto&& file : m_files)
-		zip.AddFile(
-			"EPUB/" + file.second.filename().string(),
-			file.second
-		);
+		zip.AddFile("EPUB/" + file.first, file.second);
 }
 
-void Epub::Add(const boost::filesystem::path& file)
+void Epub::AddSpine(const std::string& dest, const boost::filesystem::path& src)
 {
 	auto id = "itemid" + std::to_string(m_counter++);
 	auto mitem = m_manifest.AppendChild("item", m_idpf);
 	mitem.SetAttribute({},     "id",   id);
-	mitem.SetAttribute(m_idpf, "href", file.filename().string());
+	mitem.SetAttribute(m_idpf, "href", dest);
 	mitem.SetAttribute(m_idpf, "media-type", "application/xhtml+xml");
 	
 	auto spitem = m_spine.AppendChild("itemref", m_idpf);
 	spitem.SetAttribute(m_idpf, "idref", id);
 	
-	m_files.insert({id, file});
+	m_files.insert({dest, src});
 }
 
 } // end of namespace
