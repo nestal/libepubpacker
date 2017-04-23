@@ -14,6 +14,8 @@
 
 #include "Zip.hh"
 
+#include <boost/assert.hpp>
+
 #include <stdexcept>
 #include <iostream>
 
@@ -71,16 +73,33 @@ void Epub::Generate(const std::string& outfile) const
 
 void Epub::AddSpine(const std::string& dest, const boost::filesystem::path& src)
 {
-	auto id = "itemid" + std::to_string(m_counter++);
-	auto mitem = m_manifest.AppendChild("item", m_idpf);
-	mitem.SetAttribute({},     "id",   id);
-	mitem.SetAttribute(m_idpf, "href", dest);
-	mitem.SetAttribute(m_idpf, "media-type", "application/xhtml+xml");
+	BOOST_ASSERT(m_files.find(dest) == m_files.end());
+	
+	auto id = Add(dest, src, "application/xhtml+xml");
+	BOOST_ASSERT(!id.empty());
 	
 	auto spitem = m_spine.AppendChild("itemref", m_idpf);
 	spitem.SetAttribute(m_idpf, "idref", id);
-	
-	m_files.insert({dest, src});
+}
+
+std::string Epub::Add(const std::string& dest, const boost::filesystem::path& src, const std::string& mime)
+{
+	if (m_files.find(dest) == m_files.end())
+	{
+		auto id = "itemid" + std::to_string(m_counter++);
+		auto mitem = m_manifest.AppendChild("item", m_idpf);
+		mitem.SetAttribute({},     "id",   id);
+		mitem.SetAttribute(m_idpf, "href", dest);
+		mitem.SetAttribute(m_idpf, "media-type", mime);
+		
+		m_files.insert({dest, src});
+		return id;
+	}
+	else
+	{
+		std::cout << "skipping " << dest << std::endl;
+		return {};
+	}
 }
 
 } // end of namespace
