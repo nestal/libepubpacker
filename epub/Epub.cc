@@ -34,23 +34,38 @@ Epub::Epub(const std::string& unique_id, const std::string& title) :
 	rfile.SetAttribute(cns, "full-path", opf_path);
 	rfile.SetAttribute(cns, "media-type", "application/oebps-package+xml");
 	
-	auto idpf = m_opf.Root().NewNS("http://www.idpf.org/2007/opf", {});
-	m_opf.Root().SetNS(idpf);
+	m_idpf = m_opf.Root().NewNS("http://www.m_idpf.org/2007/opf", {});
+	m_opf.Root().SetNS(m_idpf);
 	m_opf.Root().SetAttribute({}, "xml:lang", "en");
-	m_opf.Root().SetAttribute(idpf, "unique-identifier", pub_id);
-	m_opf.Root().SetAttribute(idpf, "version", "3.1");
+	m_opf.Root().SetAttribute(m_idpf, "unique-identifier", pub_id);
+	m_opf.Root().SetAttribute(m_idpf, "version", "3.1");
 	
-	auto metadata = m_opf.Root().AppendChild("metadata", idpf);
+	auto metadata = m_opf.Root().AppendChild("metadata", m_idpf);
 	auto dc = metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
 	
 	metadata.AppendChild("identifier", dc, unique_id).SetAttribute({}, "id", pub_id);
-	metadata.AppendChild("language", dc, "en");
+	metadata.AppendChild("language", dc, "en-US");
 	metadata.AppendChild("title", dc, title);
+	
+	m_manifest = m_opf.Root().AppendChild("manifest", m_idpf);
+	m_spine    = m_opf.Root().AppendChild("spine", m_idpf);
 }
 
 void Epub::Generate(const std::string& outfile) const
 {
 	std::cout << m_opf.Root() << std::endl;
+}
+
+void Epub::Add(const std::string& file)
+{
+	auto id = "itemid" + std::to_string(m_counter++);
+	auto mitem = m_manifest.AppendChild("item", m_idpf);
+	mitem.SetAttribute({},     "id",   id);
+	mitem.SetAttribute(m_idpf, "href", file);
+	mitem.SetAttribute(m_idpf, "media-type", "application/xhtml+xml");
+	
+	auto spitem = m_spine.AppendChild("itemref", m_idpf);
+	spitem.SetAttribute(m_idpf, "idref", id);
 }
 
 } // end of namespace

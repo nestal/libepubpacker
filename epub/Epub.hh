@@ -28,6 +28,13 @@ public:
 private:
 	xml::Doc m_container;
 	xml::Doc m_opf;
+	
+	xml::Namespace m_idpf;
+	
+	xml::Node m_manifest;
+	xml::Node m_spine;
+	
+	int m_counter{0};
 };
 
 } // end of namespace
