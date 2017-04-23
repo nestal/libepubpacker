@@ -20,7 +20,8 @@ using namespace xml;
 TEST(DocTest, TestMoveCtor)
 {
 	Doc subject{"someroot"};
-	subject.Root().AppendChild("child");
+	auto dc = subject.Root().NewNS("http://www.w3.org/2000/xmlns/", "dc");
+	subject.Root().AppendChild("child", dc, "some text");
 	
 	Doc s2{std::move(subject)};
 	

@@ -104,10 +104,16 @@ std::string Node::Name() const
 	return reinterpret_cast<const char*>(m_node->name);
 }
 
-Node Node::AppendChild(const std::string& name)
+Node Node::AppendChild(const std::string& name, Namespace ns, const std::string& content)
 {
 	BOOST_ASSERT(m_node);
-	return {::xmlNewChild(m_node, nullptr, BAD_CAST name.c_str(), nullptr)};
+	return {::xmlNewChild(m_node, ns, BAD_CAST name.c_str(), BAD_CAST content.c_str())};
+}
+
+Namespace Node::NewNS(const std::string& href, const std::string& prefix)
+{
+	BOOST_ASSERT(m_node);
+	return ::xmlNewNs(m_node, BAD_CAST href.c_str(), BAD_CAST prefix.c_str());
 }
 
 } // end of namespace

@@ -18,7 +18,9 @@
 
 namespace xml {
 
+class Doc;
 class Node;
+using Namespace = ::xmlNsPtr;
 
 class Doc
 {
@@ -44,7 +46,9 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Node& node);
 	
 	std::string Name() const;
-	Node AppendChild(const std::string& name);
+	Node AppendChild(const std::string& name, Namespace ns = {}, const std::string& content = {});
+	
+	Namespace NewNS(const std::string& href, const std::string& prefix);
 	
 private:
 	friend class Doc;
