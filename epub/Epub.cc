@@ -40,6 +40,8 @@ Epub::Epub() : m_container{"container"}, m_opf{"package"}
 	
 	auto metadata = m_opf.Root().AppendChild("metadata", idpf);
 	metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
+	
+	std::cout << metadata << std::endl;
 }
 
 void Epub::Generate(const std::string& outfile) const

@@ -22,7 +22,7 @@ namespace {
 
 auto OStreamOutputBuffer(std::ostream& os, xmlCharEncoding enc = XML_CHAR_ENCODING_UTF8)
 {
-	return ::xmlOutputBufferCreateIO(
+	auto buf = ::xmlOutputBufferCreateIO(
 		// write callback function: return # of bytes written
 		[](void *ctx, const char *data, int len)
 		{
@@ -38,6 +38,9 @@ auto OStreamOutputBuffer(std::ostream& os, xmlCharEncoding enc = XML_CHAR_ENCODI
 		os.rdbuf(),
 		::xmlGetCharEncodingHandler(enc)
 	);
+	if (!buf)
+		throw -1;
+	return buf;
 }
 
 } // end of local namespace
@@ -86,15 +89,17 @@ std::ostream& operator<<(std::ostream& os, const Node& node)
 	BOOST_ASSERT(node.m_node);
 	BOOST_ASSERT(node.m_node->doc);
 
+	auto buf = OStreamOutputBuffer(os);
 	::xmlNodeDumpOutput(
-		OStreamOutputBuffer(os),
-		node.m_node->doc,
+		buf,
+		nullptr,
 		node.m_node,
 		0,
-		1,
+		0,
 		::xmlGetCharEncodingName(XML_CHAR_ENCODING_UTF8)
 	);
-	os.rdbuf()->pubsync();
+	::xmlOutputBufferFlush(buf);
+	
 	return os;
 }
 
