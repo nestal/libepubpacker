@@ -40,7 +40,7 @@ Epub::Epub(const std::string& unique_id, const std::string& title, const std::ve
 	rfile.SetAttribute(cns, "full-path", opf_path);
 	rfile.SetAttribute(cns, "media-type", "application/oebps-package+xml");
 	
-	m_idpf = m_opf.Root().NewNS("http://www.m_idpf.org/2007/opf", {});
+	m_idpf = m_opf.Root().NewNS("http://www.idpf.org/2007/opf", {});
 	m_opf.Root().SetNS(m_idpf);
 	m_opf.Root().SetAttribute({}, "xml:lang", "en");
 	m_opf.Root().SetAttribute(m_idpf, "unique-identifier", pub_id);
@@ -74,18 +74,26 @@ void Epub::Generate(const std::string& outfile) const
 		zip.AddFile("EPUB/" + file.first, file.second);
 }
 
-void Epub::AddSpine(const std::string& dest, const boost::filesystem::path& src)
+void Epub::AddSpine(
+	const std::string& dest,
+	const boost::filesystem::path& src,
+	const std::string& mime,
+	const std::string& property)
 {
 	BOOST_ASSERT(m_files.find(dest) == m_files.end());
 	
-	auto id = Add(dest, src, "application/xhtml+xml");
+	auto id = Add(dest, src, mime, property);
 	BOOST_ASSERT(!id.empty());
 	
 	auto spitem = m_spine.AppendChild("itemref", m_idpf);
 	spitem.SetAttribute(m_idpf, "idref", id);
 }
 
-std::string Epub::Add(const std::string& dest, const boost::filesystem::path& src, const std::string& mime)
+std::string Epub::Add(
+	const std::string& dest,
+	const boost::filesystem::path& src,
+	const std::string& mime,
+	const std::string& property)
 {
 	if (m_files.find(dest) == m_files.end())
 	{
@@ -94,6 +102,9 @@ std::string Epub::Add(const std::string& dest, const boost::filesystem::path& sr
 		mitem.SetAttribute({},     "id",   id);
 		mitem.SetAttribute(m_idpf, "href", dest);
 		mitem.SetAttribute(m_idpf, "media-type", mime);
+		
+		if (!property.empty())
+			mitem.SetAttribute(m_idpf, "properties", property);
 		
 		m_files.insert({dest, src});
 		return id;

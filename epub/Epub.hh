@@ -24,8 +24,18 @@ class Epub
 public:
 	Epub(const std::string& unique_id, const std::string& title, const std::vector<std::string>& authors);
 	
-	void AddSpine(const std::string& dest, const boost::filesystem::path& src);
-	std::string Add(const std::string& dest, const boost::filesystem::path& src, const std::string& mime);
+	void AddSpine(
+		const std::string& dest,
+		const boost::filesystem::path& src,
+		const std::string& mime = "application/xhtml+xml",
+		const std::string& property = {}
+	);
+	std::string Add(
+		const std::string& dest,
+		const boost::filesystem::path& src,
+		const std::string& mime,
+		const std::string& property = {}
+	);
 	
 	void Generate(const std::string& outfile) const;
 	
