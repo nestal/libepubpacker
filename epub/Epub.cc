@@ -57,11 +57,19 @@ Epub::Epub(const std::string& unique_id, const std::string& title) :
 
 void Epub::Generate(const std::string& outfile) const
 {
-	std::cout << m_opf.Root() << std::endl;
-
 	Zip zip{outfile};
-	auto midx = zip.Add("mimetype", "application/epub+zip");
+	auto midx = zip.AddData("mimetype", "application/epub+zip");
 	zip.SetNoCompression(midx);
+
+	zip.CreateDir("META-INF");
+	zip.AddData("META-INF/container.xml", m_container.Dump());
+	zip.AddData(opf_path, m_opf.Dump());
+
+	for (auto&& file : m_files)
+		zip.AddFile(
+			"EPUB/" + file.second.filename().string(),
+			file.second
+		);
 }
 
 void Epub::Add(const boost::filesystem::path& file)
