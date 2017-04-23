@@ -28,7 +28,7 @@ const std::string pub_id   = "pub-id";
 
 namespace epub {
 
-Epub::Epub(const std::string& unique_id, const std::string& title) :
+Epub::Epub(const std::string& unique_id, const std::string& title, const std::vector<std::string>& authors) :
 	m_container{"container"}, m_opf{"package"}
 {
 	auto cns = m_container.Root().NewNS("urn:oasis:names:tc:opendocument:xmlns:container", {});
@@ -52,6 +52,9 @@ Epub::Epub(const std::string& unique_id, const std::string& title) :
 	metadata.AppendChild("identifier", dc, unique_id).SetAttribute({}, "id", pub_id);
 	metadata.AppendChild("language", dc, "en-US");
 	metadata.AppendChild("title", dc, title);
+	
+	for (auto&& author : authors)
+		metadata.AppendChild("creator", dc, author);
 	
 	m_manifest = m_opf.Root().AppendChild("manifest", m_idpf);
 	m_spine    = m_opf.Root().AppendChild("spine", m_idpf);

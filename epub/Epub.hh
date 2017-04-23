@@ -22,7 +22,7 @@ namespace epub {
 class Epub
 {
 public:
-	Epub(const std::string& unique_id, const std::string& title);
+	Epub(const std::string& unique_id, const std::string& title, const std::vector<std::string>& authors);
 	
 	void AddSpine(const std::string& dest, const boost::filesystem::path& src);
 	std::string Add(const std::string& dest, const boost::filesystem::path& src, const std::string& mime);
