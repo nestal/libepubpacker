@@ -113,7 +113,21 @@ Node Node::AppendChild(const std::string& name, Namespace ns, const std::string&
 Namespace Node::NewNS(const std::string& href, const std::string& prefix)
 {
 	BOOST_ASSERT(m_node);
-	return ::xmlNewNs(m_node, BAD_CAST href.c_str(), BAD_CAST prefix.c_str());
+	
+	// if "prefix" is empty, this will be the default namespace
+	return ::xmlNewNs(m_node, BAD_CAST href.c_str(), prefix.empty() ? nullptr : BAD_CAST prefix.c_str());
+}
+
+void Node::SetAttribute(Namespace ns, const std::string& name, const std::string& value)
+{
+	BOOST_ASSERT(m_node);
+	::xmlSetNsProp(m_node, ns, BAD_CAST name.c_str(), BAD_CAST value.c_str());
+}
+
+void Node::SetNS(Namespace ns)
+{
+	BOOST_ASSERT(m_node);
+	::xmlSetNs(m_node, ns);
 }
 
 } // end of namespace

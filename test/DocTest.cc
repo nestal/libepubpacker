@@ -19,12 +19,18 @@ using namespace xml;
 
 TEST(DocTest, TestMoveCtor)
 {
-	Doc subject{"someroot"};
-	auto dc = subject.Root().NewNS("http://www.w3.org/2000/xmlns/", "dc");
-	subject.Root().AppendChild("child", dc, "some text");
+	Doc subject{"container"};
+	auto ns = subject.Root().NewNS("urn:oasis:names:tc:opendocument:xmlns:container", {});
+	subject.Root().SetNS(ns);
+	subject.Root().SetAttribute(ns, "version", "1.0");
+
+	auto rfiles = subject.Root().AppendChild("rootfiles", ns);
+	auto rfile  = rfiles.AppendChild("rootfile", ns);
+	rfile.SetAttribute(ns, "full-path", "somepath");
+	rfile.SetAttribute(ns, "media-type", "application/oebps-package+xml");
 	
 	Doc s2{std::move(subject)};
 	
-	ASSERT_EQ("someroot", s2.Root().Name());
+	ASSERT_EQ("container", s2.Root().Name());
 	std::cout << s2 << std::endl;
 }

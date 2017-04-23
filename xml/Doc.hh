@@ -47,8 +47,10 @@ public:
 	
 	std::string Name() const;
 	Node AppendChild(const std::string& name, Namespace ns = {}, const std::string& content = {});
+	void SetAttribute(Namespace ns, const std::string& name, const std::string& value);
 	
 	Namespace NewNS(const std::string& href, const std::string& prefix);
+	void SetNS(Namespace ns);
 	
 private:
 	friend class Doc;
