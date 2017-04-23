@@ -43,6 +43,9 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const Node& node);
 	
+	std::string Name() const;
+	Node AppendChild(const std::string& name);
+	
 private:
 	friend class Doc;
 	Node(::xmlNodePtr node);

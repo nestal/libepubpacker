@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <iostream>
 
 namespace {
 
@@ -43,8 +44,7 @@ auto OStreamOutputBuffer(std::ostream& os, xmlCharEncoding enc = XML_CHAR_ENCODI
 
 namespace xml {
 
-Doc::Doc(const std::string& root) :
-	Doc{}
+Doc::Doc(const std::string& root) : Doc{}
 {
 	auto node = ::xmlNewNode(NULL, BAD_CAST root.c_str());
 	::xmlDocSetRootElement(m_doc, node);
@@ -76,13 +76,16 @@ Node Doc::Root()
 	return {::xmlDocGetRootElement(m_doc)};
 }
 
-Node::Node(::xmlNodePtr node) :
-	m_node{node}
+Node::Node(::xmlNodePtr node) : m_node{node}
 {
+	BOOST_ASSERT(m_node);
 }
 
 std::ostream& operator<<(std::ostream& os, const Node& node)
 {
+	BOOST_ASSERT(node.m_node);
+	BOOST_ASSERT(node.m_node->doc);
+
 	::xmlNodeDumpOutput(
 		OStreamOutputBuffer(os),
 		node.m_node->doc,
@@ -91,8 +94,20 @@ std::ostream& operator<<(std::ostream& os, const Node& node)
 		1,
 		::xmlGetCharEncodingName(XML_CHAR_ENCODING_UTF8)
 	);
-	os.flush();
+	os.rdbuf()->pubsync();
 	return os;
+}
+
+std::string Node::Name() const
+{
+	BOOST_ASSERT(m_node);
+	return reinterpret_cast<const char*>(m_node->name);
+}
+
+Node Node::AppendChild(const std::string& name)
+{
+	BOOST_ASSERT(m_node);
+	return {::xmlNewChild(m_node, nullptr, BAD_CAST name.c_str(), nullptr)};
 }
 
 } // end of namespace

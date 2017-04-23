@@ -20,7 +20,10 @@ using namespace xml;
 TEST(DocTest, TestMoveCtor)
 {
 	Doc subject{"someroot"};
+	subject.Root().AppendChild("child");
 	
 	Doc s2{std::move(subject)};
-	std::cout << s2.Root() << std::endl;
+	
+	ASSERT_EQ("someroot", s2.Root().Name());
+	std::cout << s2 << std::endl;
 }
