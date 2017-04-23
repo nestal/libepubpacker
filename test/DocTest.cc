@@ -10,21 +10,15 @@
 // Created by nestal on 4/23/17.
 //
 
-#pragma once
+#include <gtest/gtest.h>
 
-#include <libxml/tree.h>
+#include "xml/Doc.hh"
 
-namespace xml {
+using namespace xml;
 
-class Doc
+TEST(DocTest, TestMoveCtor)
 {
-public:
-	Doc();
-	Doc(Doc&& rhs);
-	~Doc();
+	Doc subject;
 	
-private:
-	::xmlDocPtr m_doc;
-};
-
-} // end of namespace
+	Doc s2{std::move(subject)};
+}

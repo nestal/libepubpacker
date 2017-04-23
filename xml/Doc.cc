@@ -11,8 +11,29 @@
 //
 
 #include "Doc.hh"
+#include <algorithm>
+
+#include <boost/assert.hpp>
 
 namespace xml {
 
 
+Doc::Doc() : m_doc{::xmlNewDoc(BAD_CAST "1.0")}
+{
 }
+
+Doc::~Doc()
+{
+	BOOST_ASSERT(m_doc);
+	::xmlFreeDoc(m_doc);
+}
+
+Doc::Doc(Doc&& rhs) : Doc{}
+{
+	BOOST_ASSERT(m_doc);
+	
+	using namespace std;
+	swap(m_doc, rhs.m_doc);
+}
+
+} // end of namespace
