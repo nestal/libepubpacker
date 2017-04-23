@@ -36,6 +36,8 @@ public:
 	CNode Root() const;
 	Node  Root();
 	
+	std::string Dump() const;
+	
 private:
 	::xmlDocPtr m_doc{::xmlNewDoc(BAD_CAST "1.0")};
 };

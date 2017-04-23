@@ -14,6 +14,9 @@
 
 #include "xml/Doc.hh"
 
+#include <boost/filesystem/path.hpp>
+#include <unordered_map>
+
 namespace epub {
 
 class Epub
@@ -21,7 +24,7 @@ class Epub
 public:
 	Epub(const std::string& unique_id, const std::string& title);
 	
-	void Add(const std::string& file);
+	void Add(const boost::filesystem::path& file);
 	
 	void Generate(const std::string& outfile) const;
 	
@@ -35,6 +38,8 @@ private:
 	xml::Node m_spine;
 	
 	int m_counter{0};
+	
+	std::unordered_map<std::string, boost::filesystem::path> m_files;
 };
 
 } // end of namespace

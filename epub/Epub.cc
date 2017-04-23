@@ -10,8 +10,12 @@
 // Created by nestal on 4/23/17.
 //
 
-#include <iostream>
 #include "Epub.hh"
+
+#include "Zip.hh"
+
+#include <stdexcept>
+#include <iostream>
 
 namespace {
 
@@ -54,18 +58,24 @@ Epub::Epub(const std::string& unique_id, const std::string& title) :
 void Epub::Generate(const std::string& outfile) const
 {
 	std::cout << m_opf.Root() << std::endl;
+
+	Zip zip{outfile};
+	auto midx = zip.Add("mimetype", "application/epub+zip");
+	zip.SetNoCompression(midx);
 }
 
-void Epub::Add(const std::string& file)
+void Epub::Add(const boost::filesystem::path& file)
 {
 	auto id = "itemid" + std::to_string(m_counter++);
 	auto mitem = m_manifest.AppendChild("item", m_idpf);
 	mitem.SetAttribute({},     "id",   id);
-	mitem.SetAttribute(m_idpf, "href", file);
+	mitem.SetAttribute(m_idpf, "href", file.filename().string());
 	mitem.SetAttribute(m_idpf, "media-type", "application/xhtml+xml");
 	
 	auto spitem = m_spine.AppendChild("itemref", m_idpf);
 	spitem.SetAttribute(m_idpf, "idref", id);
+	
+	m_files.insert({id, file});
 }
 
 } // end of namespace

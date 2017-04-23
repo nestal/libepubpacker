@@ -15,8 +15,8 @@
 #include <boost/assert.hpp>
 
 #include <algorithm>
-#include <ostream>
 #include <iostream>
+#include <sstream>
 
 namespace {
 
@@ -72,6 +72,13 @@ std::ostream& operator<<(std::ostream& os, const Doc& doc)
 {
 	::xmlSaveFileTo(OStreamOutputBuffer(os), doc.m_doc, ::xmlGetCharEncodingName(XML_CHAR_ENCODING_UTF8));
 	return os;
+}
+
+std::string Doc::Dump() const
+{
+	std::ostringstream ss;
+	ss << *this;
+	return ss.str();
 }
 
 CNode Doc::Root() const
