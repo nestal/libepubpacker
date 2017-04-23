@@ -22,5 +22,5 @@ TEST(DocTest, TestMoveCtor)
 	Doc subject{"someroot"};
 	
 	Doc s2{std::move(subject)};
-	std::cout << s2 << std::endl;
+	std::cout << s2.Root() << std::endl;
 }

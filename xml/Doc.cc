@@ -17,10 +17,34 @@
 #include <algorithm>
 #include <ostream>
 
+namespace {
+
+auto OStreamOutputBuffer(std::ostream& os, xmlCharEncoding enc = XML_CHAR_ENCODING_UTF8)
+{
+	return ::xmlOutputBufferCreateIO(
+		// write callback function: return # of bytes written
+		[](void *ctx, const char *data, int len)
+		{
+			auto sbuf = reinterpret_cast<std::streambuf*>(ctx);
+			return static_cast<int>(sbuf->sputn(data, len));
+		},
+		// close callback function: return 0 on success and -1 on errors
+		[](void *ctx)
+		{
+			auto sbuf = reinterpret_cast<std::streambuf*>(ctx);
+			return sbuf->pubsync();
+		},
+		os.rdbuf(),
+		::xmlGetCharEncodingHandler(enc)
+	);
+}
+
+} // end of local namespace
+
 namespace xml {
 
-
-Doc::Doc(const std::string& root) : Doc{}
+Doc::Doc(const std::string& root) :
+	Doc{}
 {
 	auto node = ::xmlNewNode(NULL, BAD_CAST root.c_str());
 	::xmlDocSetRootElement(m_doc, node);
@@ -32,7 +56,8 @@ Doc::~Doc()
 	::xmlFreeDoc(m_doc);
 }
 
-Doc::Doc(Doc&& rhs) : Doc{}
+Doc::Doc(Doc&& rhs) :
+	Doc{}
 {
 	BOOST_ASSERT(m_doc);
 	
@@ -42,20 +67,31 @@ Doc::Doc(Doc&& rhs) : Doc{}
 
 std::ostream& operator<<(std::ostream& os, const Doc& doc)
 {
-	auto buffer = ::xmlOutputBufferCreateIO(
-		[](void *ctx, const char *buffer, int len)
-		{
-			auto sbuf = reinterpret_cast<std::streambuf*>(ctx);
-			return static_cast<int>(sbuf->sputn(buffer, len));
-		},
-		[](void *ctx)
-		{
-			return 0;
-		},
-		os.rdbuf(),
-		::xmlGetCharEncodingHandler(XML_CHAR_ENCODING_UTF8)
+	::xmlSaveFileTo(OStreamOutputBuffer(os), doc.m_doc, ::xmlGetCharEncodingName(XML_CHAR_ENCODING_UTF8));
+	return os;
+}
+
+Node Doc::Root()
+{
+	return {::xmlDocGetRootElement(m_doc)};
+}
+
+Node::Node(::xmlNodePtr node) :
+	m_node{node}
+{
+}
+
+std::ostream& operator<<(std::ostream& os, const Node& node)
+{
+	::xmlNodeDumpOutput(
+		OStreamOutputBuffer(os),
+		node.m_node->doc,
+		node.m_node,
+		0,
+		1,
+		::xmlGetCharEncodingName(XML_CHAR_ENCODING_UTF8)
 	);
-	::xmlSaveFileTo(buffer, doc.m_doc, "UTF-8");
+	os.flush();
 	return os;
 }
 

@@ -18,6 +18,8 @@
 
 namespace xml {
 
+class Node;
+
 class Doc
 {
 public:
@@ -28,8 +30,25 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const Doc& doc);
 	
+	Node Root();
+	
 private:
 	::xmlDocPtr m_doc{::xmlNewDoc(BAD_CAST "1.0")};
+};
+
+class Node
+{
+public:
+	Node() = default;
+	
+	friend std::ostream& operator<<(std::ostream& os, const Node& node);
+	
+private:
+	friend class Doc;
+	Node(::xmlNodePtr node);
+	
+private:
+	::xmlNodePtr m_node{};
 };
 
 } // end of namespace
