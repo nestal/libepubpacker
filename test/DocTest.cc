@@ -23,6 +23,7 @@ TEST(DocTest, TestMoveCtor)
 	auto ns = subject.Root().NewNS("urn:oasis:names:tc:opendocument:xmlns:container", {});
 	subject.Root().SetNS(ns);
 	subject.Root().SetAttribute(ns, "version", "1.0");
+	subject.Root().SetAttribute({}, "xml:lang", "en");
 
 	auto rfiles = subject.Root().AppendChild("rootfiles", ns);
 	auto rfile  = rfiles.AppendChild("rootfile", ns);
