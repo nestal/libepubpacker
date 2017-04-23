@@ -74,17 +74,27 @@ std::ostream& operator<<(std::ostream& os, const Doc& doc)
 	return os;
 }
 
-Node Doc::Root()
+CNode Doc::Root() const
 {
 	return {::xmlDocGetRootElement(m_doc)};
 }
 
-Node::Node(::xmlNodePtr node) : m_node{node}
+Node  Doc::Root()
+{
+	return {::xmlDocGetRootElement(m_doc)};
+}
+
+CNode::CNode(::xmlNodePtr node) : m_node{node}
 {
 	BOOST_ASSERT(m_node);
 }
 
-std::ostream& operator<<(std::ostream& os, const Node& node)
+std::string CNode::Attribute(const std::string& name) const
+{
+	return reinterpret_cast<const char*>(::xmlGetProp(m_node, BAD_CAST name.c_str()));
+}
+
+std::ostream& operator<<(std::ostream& os, const CNode& node)
 {
 	BOOST_ASSERT(node.m_node);
 	BOOST_ASSERT(node.m_node->doc);
@@ -95,7 +105,7 @@ std::ostream& operator<<(std::ostream& os, const Node& node)
 		nullptr,
 		node.m_node,
 		0,
-		0,
+		1,
 		::xmlGetCharEncodingName(XML_CHAR_ENCODING_UTF8)
 	);
 	::xmlOutputBufferFlush(buf);
@@ -103,7 +113,7 @@ std::ostream& operator<<(std::ostream& os, const Node& node)
 	return os;
 }
 
-std::string Node::Name() const
+std::string CNode::Name() const
 {
 	BOOST_ASSERT(m_node);
 	return reinterpret_cast<const char*>(m_node->name);

@@ -16,12 +16,13 @@
 namespace {
 
 const std::string opf_path = "EPUB/package.opf";
+const std::string pub_id   = "pub-id";
 
 }
 
 namespace epub {
 
-Epub::Epub() : m_container{"container"}, m_opf{"package"}
+Epub::Epub(const std::string& unique_id) : m_container{"container"}, m_opf{"package"}
 {
 	auto cns = m_container.Root().NewNS("urn:oasis:names:tc:opendocument:xmlns:container", {});
 	m_container.Root().SetNS(cns);
@@ -35,18 +36,18 @@ Epub::Epub() : m_container{"container"}, m_opf{"package"}
 	auto idpf = m_opf.Root().NewNS("http://www.idpf.org/2007/opf", {});
 	m_opf.Root().SetNS(idpf);
 	m_opf.Root().SetAttribute({}, "xml:lang", "en");
-	m_opf.Root().SetAttribute(idpf, "unique-identifier", "pub-id");
+	m_opf.Root().SetAttribute(idpf, "unique-identifier", pub_id);
 	m_opf.Root().SetAttribute(idpf, "version", "3.1");
 	
 	auto metadata = m_opf.Root().AppendChild("metadata", idpf);
-	metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
-	
-	std::cout << metadata << std::endl;
+	auto dc = metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
+	auto identifier = metadata.AppendChild("identifier", dc, unique_id);
+	identifier.SetAttribute({}, "id", pub_id);
 }
 
 void Epub::Generate(const std::string& outfile) const
 {
-	std::cout << m_opf << std::endl;
+	std::cout << m_opf.Root() << std::endl;
 }
 
 } // end of namespace

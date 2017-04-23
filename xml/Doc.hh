@@ -20,6 +20,7 @@ namespace xml {
 
 class Doc;
 class Node;
+class CNode;
 using Namespace = ::xmlNsPtr;
 
 class Doc
@@ -32,20 +33,36 @@ public:
 	
 	friend std::ostream& operator<<(std::ostream& os, const Doc& doc);
 	
-	Node Root();
+	CNode Root() const;
+	Node  Root();
 	
 private:
 	::xmlDocPtr m_doc{::xmlNewDoc(BAD_CAST "1.0")};
 };
 
-class Node
+class CNode
 {
 public:
-	Node() = default;
+	CNode() = default;
 	
-	friend std::ostream& operator<<(std::ostream& os, const Node& node);
+	friend std::ostream& operator<<(std::ostream& os, const CNode& node);
 	
 	std::string Name() const;
+	std::string Attribute(const std::string& name) const;
+	
+protected:
+	friend class Doc;
+	CNode(::xmlNodePtr node);
+	
+protected:
+	::xmlNodePtr m_node{};
+};
+
+class Node : public CNode
+{
+public:
+	using CNode::CNode;
+	
 	Node AppendChild(const std::string& name, Namespace ns = {}, const std::string& content = {});
 	void SetAttribute(Namespace ns, const std::string& name, const std::string& value);
 	
@@ -54,10 +71,6 @@ public:
 	
 private:
 	friend class Doc;
-	Node(::xmlNodePtr node);
-	
-private:
-	::xmlNodePtr m_node{};
 };
 
 } // end of namespace

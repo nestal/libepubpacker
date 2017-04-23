@@ -19,7 +19,7 @@ namespace epub {
 class Epub
 {
 public:
-	Epub();
+	Epub(const std::string& unique_id);
 	
 	void Add(const std::string& file);
 	
