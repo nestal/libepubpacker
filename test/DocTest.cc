@@ -13,12 +13,14 @@
 #include <gtest/gtest.h>
 
 #include "xml/Doc.hh"
+#include <iostream>
 
 using namespace xml;
 
 TEST(DocTest, TestMoveCtor)
 {
-	Doc subject;
+	Doc subject{"someroot"};
 	
 	Doc s2{std::move(subject)};
+	std::cout << s2 << std::endl;
 }

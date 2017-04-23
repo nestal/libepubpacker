@@ -11,15 +11,19 @@
 //
 
 #include "Doc.hh"
-#include <algorithm>
 
 #include <boost/assert.hpp>
+
+#include <algorithm>
+#include <ostream>
 
 namespace xml {
 
 
-Doc::Doc() : m_doc{::xmlNewDoc(BAD_CAST "1.0")}
+Doc::Doc(const std::string& root) : Doc{}
 {
+	auto node = ::xmlNewNode(NULL, BAD_CAST root.c_str());
+	::xmlDocSetRootElement(m_doc, node);
 }
 
 Doc::~Doc()
@@ -34,6 +38,25 @@ Doc::Doc(Doc&& rhs) : Doc{}
 	
 	using namespace std;
 	swap(m_doc, rhs.m_doc);
+}
+
+std::ostream& operator<<(std::ostream& os, const Doc& doc)
+{
+	auto buffer = ::xmlOutputBufferCreateIO(
+		[](void *ctx, const char *buffer, int len)
+		{
+			auto sbuf = reinterpret_cast<std::streambuf*>(ctx);
+			return static_cast<int>(sbuf->sputn(buffer, len));
+		},
+		[](void *ctx)
+		{
+			return 0;
+		},
+		os.rdbuf(),
+		::xmlGetCharEncodingHandler(XML_CHAR_ENCODING_UTF8)
+	);
+	::xmlSaveFileTo(buffer, doc.m_doc, "UTF-8");
+	return os;
 }
 
 } // end of namespace

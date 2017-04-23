@@ -13,18 +13,23 @@
 #pragma once
 
 #include <libxml/tree.h>
+#include <string>
+#include <iosfwd>
 
 namespace xml {
 
 class Doc
 {
 public:
-	Doc();
+	Doc() = default;
+	Doc(const std::string& root);
 	Doc(Doc&& rhs);
 	~Doc();
 	
+	friend std::ostream& operator<<(std::ostream& os, const Doc& doc);
+	
 private:
-	::xmlDocPtr m_doc;
+	::xmlDocPtr m_doc{::xmlNewDoc(BAD_CAST "1.0")};
 };
 
 } // end of namespace
