@@ -22,7 +22,8 @@ const std::string pub_id   = "pub-id";
 
 namespace epub {
 
-Epub::Epub(const std::string& unique_id) : m_container{"container"}, m_opf{"package"}
+Epub::Epub(const std::string& unique_id, const std::string& title) :
+	m_container{"container"}, m_opf{"package"}
 {
 	auto cns = m_container.Root().NewNS("urn:oasis:names:tc:opendocument:xmlns:container", {});
 	m_container.Root().SetNS(cns);
@@ -41,8 +42,10 @@ Epub::Epub(const std::string& unique_id) : m_container{"container"}, m_opf{"pack
 	
 	auto metadata = m_opf.Root().AppendChild("metadata", idpf);
 	auto dc = metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
-	auto identifier = metadata.AppendChild("identifier", dc, unique_id);
-	identifier.SetAttribute({}, "id", pub_id);
+	
+	metadata.AppendChild("identifier", dc, unique_id).SetAttribute({}, "id", pub_id);
+	metadata.AppendChild("language", dc, "en");
+	metadata.AppendChild("title", dc, title);
 }
 
 void Epub::Generate(const std::string& outfile) const
