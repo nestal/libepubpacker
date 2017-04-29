@@ -140,10 +140,11 @@ Namespace Node::NewNS(const std::string& href, const std::string& prefix)
 	return ::xmlNewNs(m_node, BAD_CAST href.c_str(), prefix.empty() ? nullptr : BAD_CAST prefix.c_str());
 }
 
-void Node::SetAttribute(Namespace ns, const std::string& name, const std::string& value)
+Node Node::SetAttribute(Namespace ns, const std::string& name, const std::string& value)
 {
 	BOOST_ASSERT(m_node);
 	::xmlSetNsProp(m_node, ns, BAD_CAST name.c_str(), BAD_CAST value.c_str());
+	return *this;
 }
 
 void Node::SetNS(Namespace ns)

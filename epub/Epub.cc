@@ -49,12 +49,16 @@ Epub::Epub(const std::string& unique_id, const std::string& title, const std::ve
 	auto metadata = m_opf.Root().AppendChild("metadata", m_idpf);
 	auto dc = metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
 	
-	metadata.AppendChild("identifier", dc, unique_id).SetAttribute({}, "id", pub_id);
+	metadata.AppendChild("identifier", dc, "urn:isbn:" + unique_id).SetAttribute({}, "id", pub_id);
 	metadata.AppendChild("language", dc, "en-US");
 	metadata.AppendChild("title", dc, title);
 	
 	for (auto&& author : authors)
 		metadata.AppendChild("creator", dc, author);
+	
+	metadata.AppendChild("meta", m_idpf, "isbn").
+		SetAttribute({}, "refines", "#"+pub_id).
+		SetAttribute({}, "scheme", "xsd:string");
 	
 	m_manifest = m_opf.Root().AppendChild("manifest", m_idpf);
 	m_spine    = m_opf.Root().AppendChild("spine", m_idpf);
