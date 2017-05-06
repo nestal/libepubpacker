@@ -16,6 +16,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <unordered_map>
+#include <chrono>
 
 namespace epub {
 
@@ -27,6 +28,7 @@ public:
 	void SetTitle(const std::string& title);
 	void AddAuthor(const std::string& author);
 	void AddPublisher(const std::string& publisher);
+	void SetDate(std::chrono::system_clock::time_point date);
 	
 	void AddSpine(
 		const std::string& dest,

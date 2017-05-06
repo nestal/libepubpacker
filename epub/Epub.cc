@@ -16,8 +16,11 @@
 
 #include <boost/assert.hpp>
 
+#include <ctime>
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 namespace {
 
@@ -133,6 +136,17 @@ void Epub::AddPublisher(const std::string& publisher)
 	std::cout << "pub = " << publisher << std::endl;
 	m_metadata.AppendChild("publisher", m_dc, publisher);
 	m_metadata.AppendChild("meta", {}, publisher).SetAttribute({}, "property", "dcterms:publisher");
+}
+
+void Epub::SetDate(std::chrono::system_clock::time_point date)
+{
+	std::ostringstream ss;
+	
+	auto tt = std::chrono::system_clock::to_time_t(date);
+	ss << std::put_time(std::gmtime(&tt), "%FT%TZ");
+	
+	m_metadata.AppendChild("date", m_dc, ss.str());
+	m_metadata.AppendChild("meta", {}, ss.str()).SetAttribute({}, "property", "dcterms:date");
 }
 
 } // end of namespace
