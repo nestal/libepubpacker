@@ -22,11 +22,13 @@ include_directories(
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-file(GLOB XML_LIB_FILES	xml/*.hh xml/*.cc)
+file(GLOB XML_LIB_FILES		xml/*.hh xml/*.cc)
+file(GLOB UTIL_LIB_FILES	util/*.hh util/*.cc)
 file(GLOB EPUB_LIB_FILES	epub/*.hh epub/*.cc)
 add_library(epubpacker
 	${EPUB_LIB_FILES}
 	${XML_LIB_FILES}
+	${UTIL_LIB_FILES}
 )
 target_link_libraries(epubpacker ${Boost_LIBRARIES} ${LIBXML2_LIBRARIES})
 

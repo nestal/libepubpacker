@@ -12,8 +12,8 @@
 
 #include "Epub.hh"
 
-#include "Zip.hh"
-#include "ISODate.hh"
+#include "util/Zip.hh"
+#include "util/ISODate.hh"
 
 #include <boost/assert.hpp>
 
