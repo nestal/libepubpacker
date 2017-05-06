@@ -13,6 +13,7 @@
 #include "Epub.hh"
 
 #include "Zip.hh"
+#include "ISODate.hh"
 
 #include <boost/assert.hpp>
 
@@ -53,7 +54,10 @@ Epub::Epub(const std::string& unique_id) :
 	m_dc      = m_metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
 	m_dcterms = m_metadata.NewNS("http://purl.org/dc/terms/", "dcterms");
 	
-	m_metadata.AppendChild("identifier", m_dc, "urn:isbn:" + unique_id).SetAttribute({}, "id", pub_id);
+	// See http://idpf.github.io/epub-registries/identifiers/ for identifier schemes
+	m_metadata.AppendChild("identifier", m_dc, unique_id).
+		SetAttribute({}, "id", pub_id).
+		SetAttribute(m_idpf, "scheme", "isbn");
 	m_metadata.AppendChild("language", m_dc, "en-US");
 	
 	m_metadata.AppendChild("meta", m_idpf, "isbn").
@@ -128,25 +132,23 @@ void Epub::SetTitle(const std::string& title)
 
 void Epub::AddAuthor(const std::string& author)
 {
-	m_metadata.AppendChild("creator", m_dc, author);
+	// the role attribute contains the first 3 lowercase character of the relation "author"
+	// Defined here: http://www.loc.gov/marc/relators/
+	m_metadata.AppendChild("creator", m_dc, author).SetAttribute(m_idpf, "role", "aut");
 }
 
 void Epub::AddPublisher(const std::string& publisher)
 {
-	std::cout << "pub = " << publisher << std::endl;
 	m_metadata.AppendChild("publisher", m_dc, publisher);
 	m_metadata.AppendChild("meta", {}, publisher).SetAttribute({}, "property", "dcterms:publisher");
 }
 
 void Epub::SetDate(std::chrono::system_clock::time_point date)
 {
-	std::ostringstream ss;
+	auto str = ISODate{date}.Str();
 	
-	auto tt = std::chrono::system_clock::to_time_t(date);
-	ss << std::put_time(std::gmtime(&tt), "%FT%TZ");
-	
-	m_metadata.AppendChild("date", m_dc, ss.str());
-	m_metadata.AppendChild("meta", {}, ss.str()).SetAttribute({}, "property", "dcterms:date");
+	m_metadata.AppendChild("date", m_dc, str);
+	m_metadata.AppendChild("meta", {}, str).SetAttribute({}, "property", "dcterms:date");
 }
 
 } // end of namespace
