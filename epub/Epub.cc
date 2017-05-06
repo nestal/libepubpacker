@@ -28,7 +28,7 @@ const std::string pub_id   = "pub-id";
 
 namespace epub {
 
-Epub::Epub(const std::string& unique_id, const std::string& title, const std::vector<std::string>& authors) :
+Epub::Epub(const std::string& unique_id) :
 	m_container{"container"}, m_opf{"package"}
 {
 	auto cns = m_container.Root().NewNS("urn:oasis:names:tc:opendocument:xmlns:container", {});
@@ -46,17 +46,14 @@ Epub::Epub(const std::string& unique_id, const std::string& title, const std::ve
 	m_opf.Root().SetAttribute(m_idpf, "unique-identifier", pub_id);
 	m_opf.Root().SetAttribute(m_idpf, "version", "3.1");
 	
-	auto metadata = m_opf.Root().AppendChild("metadata", m_idpf);
-	m_dc = metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
+	m_metadata = m_opf.Root().AppendChild("metadata", m_idpf);
+	m_dc      = m_metadata.NewNS("http://purl.org/dc/elements/1.1/", "dc");
+	m_dcterms = m_metadata.NewNS("http://purl.org/dc/terms/", "dcterms");
 	
-	metadata.AppendChild("identifier", m_dc, "urn:isbn:" + unique_id).SetAttribute({}, "id", pub_id);
-	metadata.AppendChild("language", m_dc, "en-US");
-	metadata.AppendChild("title", m_dc, title);
+	m_metadata.AppendChild("identifier", m_dc, "urn:isbn:" + unique_id).SetAttribute({}, "id", pub_id);
+	m_metadata.AppendChild("language", m_dc, "en-US");
 	
-	for (auto&& author : authors)
-		metadata.AppendChild("creator", m_dc, author);
-	
-	metadata.AppendChild("meta", m_idpf, "isbn").
+	m_metadata.AppendChild("meta", m_idpf, "isbn").
 		SetAttribute({}, "refines", "#"+pub_id).
 		SetAttribute({}, "scheme", "xsd:string");
 	
@@ -118,6 +115,16 @@ std::string Epub::Add(
 		std::cout << "skipping " << dest << std::endl;
 		return {};
 	}
+}
+
+void Epub::SetTitle(const std::string& title)
+{
+	m_metadata.AppendChild("title", m_dc, title);
+}
+
+void Epub::AddAuthor(const std::string& author)
+{
+	m_metadata.AppendChild("creator", m_dc, author);
 }
 
 } // end of namespace

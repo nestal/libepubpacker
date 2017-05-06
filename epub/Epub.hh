@@ -22,7 +22,10 @@ namespace epub {
 class Epub
 {
 public:
-	Epub(const std::string& unique_id, const std::string& title, const std::vector<std::string>& authors);
+	Epub(const std::string& unique_id);
+	
+	void SetTitle(const std::string& title);
+	void AddAuthor(const std::string& author);
 	
 	void AddSpine(
 		const std::string& dest,
@@ -45,9 +48,11 @@ private:
 	
 	xml::Namespace m_idpf;
 	xml::Namespace m_dc;
+	xml::Namespace m_dcterms;
 	
 	xml::Node m_manifest;
 	xml::Node m_spine;
+	xml::Node m_metadata;
 	
 	int m_counter{0};
 	
