@@ -46,7 +46,6 @@ Epub::Epub(const std::string& unique_id) :
 	
 	m_idpf = m_opf.Root().NewNS("http://www.idpf.org/2007/opf", {});
 	m_opf.Root().SetNS(m_idpf);
-	m_opf.Root().SetAttribute({}, "xml:lang", "en");
 	m_opf.Root().SetAttribute(m_idpf, "unique-identifier", pub_id);
 	m_opf.Root().SetAttribute(m_idpf, "version", "3.1");
 	
@@ -161,6 +160,47 @@ void Epub::AddLink(const std::string& rel, const std::string& href)
 void Epub::Acquire(const std::string& href)
 {
 	AddLink("acquire", href);
+}
+
+void Epub::SetDescription(const std::string& text)
+{
+	m_metadata.AppendChild("description", m_dc, text);
+}
+
+void Epub::AddSubject(const std::string& subject)
+{
+	m_metadata.AppendChild("subject", m_dc, subject);
+	m_metadata.AppendChild("meta", {}, subject).
+		SetAttribute({}, "property", "dcterms:subject");
+}
+
+void Epub::SetRights(const std::string& rights)
+{
+	m_metadata.AppendChild("rights", m_dc, rights);
+	m_metadata.AppendChild("meta", {}, rights).
+		SetAttribute({}, "property", "dcterms:rights");
+}
+
+void Epub::SetLanguage(const std::string& lang)
+{
+	m_opf.Root().SetAttribute({}, "xml:lang", "en");
+}
+
+void Epub::SetFormat(const std::string& format, const std::string& extent)
+{
+	m_metadata.AppendChild("format", m_dc, format);
+	m_metadata.AppendChild("meta", {}, format).
+		SetAttribute({}, "property", "dcterms:format");
+	
+	if (!extent.empty())
+		m_metadata.AppendChild("meta", {}, extent).
+			SetAttribute({}, "property", "dcterms:extent");
+}
+
+void Epub::SetCreationTime(std::chrono::system_clock::time_point ctime)
+{
+	m_metadata.AppendChild("meta", {}, ISODate{ctime}.Str()).
+		SetAttribute({}, "property", "dcterms:created");
 }
 
 void Epub::SetModifiedTime(std::chrono::system_clock::time_point date)
