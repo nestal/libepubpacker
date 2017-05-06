@@ -42,8 +42,6 @@ std::istream& operator>>(std::istream& is, ISODate& date)
 		while (is >> ch && ch == 'Z')
 			;
 	}
-	else
-		std::cout << "???" << std::endl;
 	
 	return is;
 }
