@@ -120,6 +120,7 @@ std::string Epub::Add(
 void Epub::SetTitle(const std::string& title)
 {
 	m_metadata.AppendChild("title", m_dc, title);
+	m_metadata.AppendChild("meta", {}, title).SetAttribute({}, "property", "dcterms:title");
 }
 
 void Epub::AddAuthor(const std::string& author)
