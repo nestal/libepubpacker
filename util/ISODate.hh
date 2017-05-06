@@ -17,7 +17,7 @@
 #include <ctime>
 #include <string>
 
-namespace epub {
+namespace util {
 
 class ISODate
 {

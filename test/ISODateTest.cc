@@ -14,7 +14,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace epub;
+using namespace util;
 
 TEST(ISODateTest, NormalTest)
 {

@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <iostream>
 
-namespace epub {
+namespace util {
 
 ISODate::ISODate(std::chrono::system_clock::time_point tp) : m_timepoint{tp}
 {

@@ -32,6 +32,8 @@ const std::string pub_id   = "pub-id";
 
 namespace epub {
 
+using namespace util;
+
 Epub::Epub(const std::string& unique_id) :
 	m_container{"container"}, m_opf{"package"}
 {

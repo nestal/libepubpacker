@@ -19,7 +19,7 @@
 
 #include <zip.h>
 
-namespace epub {
+namespace util {
 
 class Zip
 {

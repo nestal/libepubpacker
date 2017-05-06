@@ -15,7 +15,8 @@
 #include <stdexcept>
 #include <iostream>
 
-namespace epub {
+namespace util {
+
 Zip::Zip(const std::string& filename) :
 	m_zip{::zip_open(filename.c_str(), ZIP_TRUNCATE|ZIP_CREATE, nullptr)}
 {
