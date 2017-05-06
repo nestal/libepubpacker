@@ -51,7 +51,7 @@ std::istream& operator>>(std::istream& is, ISODate& date)
 std::ostream& operator<<(std::ostream& os, const ISODate& date)
 {
 	auto tm = date.Tm();
-	return os << std::put_time(&tm, "%FT%TZ");
+	return os << std::put_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
 }
 
 ISODate::ISODate(int year, int month, int day, int hour, int minute, int second)
