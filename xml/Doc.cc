@@ -126,31 +126,32 @@ std::string CNode::Name() const
 	return reinterpret_cast<const char*>(m_node->name);
 }
 
-Node Node::AppendChild(const std::string& name, Namespace ns, const std::string& content)
+::xmlNodePtr CNode::NodePtr() const
 {
 	BOOST_ASSERT(m_node);
-	return {::xmlNewChild(m_node, ns, BAD_CAST name.c_str(), BAD_CAST content.c_str())};
+	return m_node;
+}
+
+Node Node::AppendChild(const std::string& name, Namespace ns, const std::string& content)
+{
+	return {::xmlNewChild(NodePtr(), ns, BAD_CAST name.c_str(), BAD_CAST content.c_str())};
 }
 
 Namespace Node::NewNS(const std::string& href, const std::string& prefix)
 {
-	BOOST_ASSERT(m_node);
-	
 	// if "prefix" is empty, this will be the default namespace
-	return ::xmlNewNs(m_node, BAD_CAST href.c_str(), prefix.empty() ? nullptr : BAD_CAST prefix.c_str());
+	return ::xmlNewNs(NodePtr(), BAD_CAST href.c_str(), prefix.empty() ? nullptr : BAD_CAST prefix.c_str());
 }
 
 Node Node::SetAttribute(Namespace ns, const std::string& name, const std::string& value)
 {
-	BOOST_ASSERT(m_node);
-	::xmlSetNsProp(m_node, ns, BAD_CAST name.c_str(), BAD_CAST value.c_str());
+	::xmlSetNsProp(NodePtr(), ns, BAD_CAST name.c_str(), BAD_CAST value.c_str());
 	return *this;
 }
 
 void Node::SetNS(Namespace ns)
 {
-	BOOST_ASSERT(m_node);
-	::xmlSetNs(m_node, ns);
+	::xmlSetNs(NodePtr(), ns);
 }
 
 } // end of namespace

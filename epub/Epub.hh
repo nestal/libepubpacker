@@ -44,6 +44,7 @@ private:
 	xml::Doc m_opf;
 	
 	xml::Namespace m_idpf;
+	xml::Namespace m_dc;
 	
 	xml::Node m_manifest;
 	xml::Node m_spine;

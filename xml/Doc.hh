@@ -46,6 +46,11 @@ class CNode
 {
 public:
 	CNode() = default;
+	CNode(const CNode&) = default;
+	CNode(CNode&&) = default;
+	CNode& operator=(const CNode&) = default;
+	CNode& operator=(CNode&&) = default;
+	~CNode() = default;
 	
 	friend std::ostream& operator<<(std::ostream& os, const CNode& node);
 	
@@ -55,8 +60,9 @@ public:
 protected:
 	friend class Doc;
 	CNode(::xmlNodePtr node);
+	::xmlNodePtr NodePtr() const;
 	
-protected:
+private:
 	::xmlNodePtr m_node{};
 };
 
@@ -64,6 +70,7 @@ class Node : public CNode
 {
 public:
 	using CNode::CNode;
+	using CNode::operator=;
 	
 	Node AppendChild(const std::string& name, Namespace ns = {}, const std::string& content = {});
 	Node SetAttribute(Namespace ns, const std::string& name, const std::string& value);
