@@ -25,6 +25,7 @@ public:
 	ISODate() = default;
 	ISODate(std::chrono::system_clock::time_point tp);
 	ISODate(struct tm tm);
+	ISODate(const std::string& str);
 	
 	ISODate(int year, int month, int day, int hour, int minute, int second);
 	
@@ -32,11 +33,13 @@ public:
 	
 	std::string Str() const;
 	
+	std::chrono::system_clock::time_point Get() const;
+	
 	friend std::istream& operator>>(std::istream& is, ISODate& date);
 	friend std::ostream& operator<<(std::ostream& is, const ISODate& date);
 	
 private:
-	std::chrono::system_clock::time_point m_timepoint;
+	std::chrono::system_clock::time_point m_timepoint{};
 };
 
 std::string to_string(ISODate date);

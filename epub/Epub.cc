@@ -151,4 +151,22 @@ void Epub::SetDate(std::chrono::system_clock::time_point date)
 	m_metadata.AppendChild("meta", {}, str).SetAttribute({}, "property", "dcterms:date");
 }
 
+void Epub::AddLink(const std::string& rel, const std::string& href)
+{
+	m_metadata.AppendChild("link", m_idpf).
+		SetAttribute(m_idpf, "rel", rel).
+		SetAttribute(m_idpf, "href", href);
+}
+
+void Epub::Acquire(const std::string& href)
+{
+	AddLink("acquire", href);
+}
+
+void Epub::SetModifiedTime(std::chrono::system_clock::time_point date)
+{
+	m_metadata.AppendChild("meta", {}, ISODate{date}.Str()).
+		SetAttribute({}, "property", "dcterms:modified");
+}
+
 } // end of namespace

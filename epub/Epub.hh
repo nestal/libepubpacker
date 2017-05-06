@@ -29,6 +29,11 @@ public:
 	void AddAuthor(const std::string& author);
 	void AddPublisher(const std::string& publisher);
 	void SetDate(std::chrono::system_clock::time_point date);
+	void SetModifiedTime(std::chrono::system_clock::time_point mtime);
+	
+	// links: https://idpf.github.io/epub-vocabs/package/link/
+	void AddLink(const std::string& rel, const std::string& href);
+	void Acquire(const std::string& href);
 	
 	void AddSpine(
 		const std::string& dest,

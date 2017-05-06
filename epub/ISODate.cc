@@ -13,6 +13,7 @@
 #include "ISODate.hh"
 
 #include <iomanip>
+#include <iostream>
 
 namespace epub {
 
@@ -24,11 +25,25 @@ ISODate::ISODate(struct tm tm) : m_timepoint{std::chrono::system_clock::from_tim
 {
 }
 
+ISODate::ISODate(const std::string& str)
+{
+	std::istringstream ss{str};
+	ss >> *this;
+}
+
 std::istream& operator>>(std::istream& is, ISODate& date)
 {
 	struct tm tm{};
-	if (is >> std::get_time(&tm, "%F"))
+	if (is >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%S"))
+	{
 		date.m_timepoint = std::chrono::system_clock::from_time_t(timegm(&tm));
+		
+		char ch{};
+		while (is >> ch && ch == 'Z')
+			;
+	}
+	else
+		std::cout << "???" << std::endl;
 	
 	return is;
 }
@@ -67,6 +82,11 @@ std::string ISODate::Str() const
 	std::ostringstream ss;
 	ss << *this;
 	return ss.str();
+}
+
+std::chrono::system_clock::time_point ISODate::Get() const
+{
+	return m_timepoint;
 }
 
 std::string to_string(ISODate date)
