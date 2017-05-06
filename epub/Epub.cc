@@ -128,4 +128,11 @@ void Epub::AddAuthor(const std::string& author)
 	m_metadata.AppendChild("creator", m_dc, author);
 }
 
+void Epub::AddPublisher(const std::string& publisher)
+{
+	std::cout << "pub = " << publisher << std::endl;
+	m_metadata.AppendChild("publisher", m_dc, publisher);
+	m_metadata.AppendChild("meta", {}, publisher).SetAttribute({}, "property", "dcterms:publisher");
+}
+
 } // end of namespace

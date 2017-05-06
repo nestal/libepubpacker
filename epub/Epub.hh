@@ -26,6 +26,7 @@ public:
 	
 	void SetTitle(const std::string& title);
 	void AddAuthor(const std::string& author);
+	void AddPublisher(const std::string& publisher);
 	
 	void AddSpine(
 		const std::string& dest,
